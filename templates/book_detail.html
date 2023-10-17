@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>About</title>
+</head>
+<body>
+
+    <h1>О книге</h1>
+    <h2>{{book_key.title}}</h2>
+    <p>{{book_key.description}}</p>
+    <img src="{{book_key.image.url}}" alt="book_prog" width="200" height="300">
+    <p>{{book_key.actuality}}</p>
+    <p>{{book_key.cost}}</p>
+    <iframe src="{{book_key.video}}" frameborder="0"></iframe>
+    <p>{{book_key.created_date}}</p>
+
+<table border="2">
+        <tr>
+            <th>Дата создания отзыва</th> <th>Комент</th> <th>Оценка</th>
+        </tr>
+
+        {% for i in book_key.review_object.all %}
+        <tr>
+            <td>{{i.created_at}}</td> <td>{{i.text_review}}</td> <td>{{i.rate_stars}}</td>
+        </tr>
+        {% endfor %}
+
+    </table>
+
+
+
+</body>
+</html>
