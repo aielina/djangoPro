@@ -25,4 +25,24 @@ def createBookView(request):
     else:
         form = forms.ReviewForm()
 
-    return render(request, 'create_review.html', {'form': form})
+    return render(request, 'create_review.html', {'form': forms})
+
+def createLangPostView(request):
+    method = request.method
+    if method == "POST":
+        form = forms.BookForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return HttpResponse('Успешно добавлен')
+    else:
+        form = forms.BookForm()
+    return render(request, 'book.html', {'form': form})
+
+def book_delete_view(request):
+    lang_value = models.Book.objects.all()
+    return render(request, 'del_book.html', {'lang_key': lang_value})
+
+def book_drop_view(request, id):
+    lang_id = get_object_or_404(models.Book, id=id)
+    lang_id.delete()
+    return HttpResponse('Успешно удален')
