@@ -27,12 +27,16 @@
             Действие
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="/create_book/">Добавить</a></li>
-            <li><a class="dropdown-item" href="/del_book/">Удалить</a></li>
+            <li><a class="dropdown-item" href="/create_post_lang/">Добавить</a></li>
+            <li><a class="dropdown-item" href="/lang_list/">Удалить</a></li>
             <li><a class="dropdown-item" href="#">Изменить</a></li>
           </ul>
         </li>
       </ul>
+        <form action="{% url 'search' %}" method="GET" class="d-flex" role="search">
+        <input class="form-control me-2" type="text" name="q" type="search" placeholder="Поиск" aria-label="Поиск">
+        <button class="btn btn-outline-success" type="submit">Поиск</button>
+      </form>
     </div>
   </div>
 </nav>

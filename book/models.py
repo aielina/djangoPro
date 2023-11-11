@@ -7,7 +7,7 @@ class Book(models.Model):
     )
     title = models.CharField(max_length=30)
     description = models.TextField()
-    image = models.ImageField(upload_to='')
+    image = models.FileField(upload_to='', null=True)
     cost = models.CharField(max_length=10)
     created_date = models.DateTimeField(auto_now_add=True)
     video = models.URLField(null=True)

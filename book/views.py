@@ -1,48 +1,70 @@
-from django.http import HttpResponse
-from django.shortcuts import render,  get_object_or_404
+from django.shortcuts import render, get_object_or_404
+from django.views import generic
 from . import models, forms
 
-def book_view(request):
-    book_value = models.Book.objects.all()
-    return render(request, 'book.html', {'book_key': book_value})
+class BookView(generic.ListView):
+    template_name = 'book.html'
+    queryset = models.Book.objects.all()
 
-def book_detail_view(request, id):
-    book_id = get_object_or_404(models.Book, id=id)
-    return render(request, 'book_detail.html', {'book_key': book_id})
+    def get_queryset(self):
+        return models.Book.objects.all()
 
-def home(request):
-    books = models.Book.objects.all()
-    return render(request, 'book.html',{'book_key': books})
+class BookDetailView(generic.DetailView):
+    template_name = 'book_detail.html'
+
+    def get_object(self, **kwargs):
+        lang = self.kwargs.get('id')
+        return get_object_or_404(models.Book, id=lang)
+
+class CreateBookPostView(generic.CreateView):
+    template_name = 'book.html'
+    form_class = forms.BookForm
+    queryset = models.Book.objects.all()
+    success_url = '/'
+
+    def form_valid(self, form):
+        print(form.cleaned_data)
+        return super(CreateBookPostView, self).form_valid(form=form)
+
+class UpdateBookPostView(generic.UpdateView):
+    template_name = 'update_book.html'
+    form_class = forms.BookForm
+    success_url = '/'
+
+    def get_object(self, **kwargs):
+        lang = self.kwargs.get('id')
+        return get_object_or_404(models.Book, id=lang)
+
+    def form_valid(self, form):
+        return super(UpdateBookPostView, self).form_valid(form=form)
+
+class BookDropView(generic.DeleteView):
+    template_name = 'confirm_del.html'
+    success_url = '/'
+
+    def get_object(self, **kwargs):
+        lang_id = self.kwargs.get('id')
+        return get_object_or_404(models.Book, id=lang_id)
+
+class SearchView(generic.ListView):
+    template_name = 'book.html'
+    context_object_name = 'object_list'  # изменено с 'book'
+    paginate_by = 5
+
+    def get_queryset(self):
+        return models.Book.objects.filter(title__icontains=self.request.GET.get('q'))
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['q'] = self.request.GET.get('q')
+        return context
 
 def createBookView(request):
-    method = request.method
-    if method == 'POST':
-        form = forms.ReviewForm(request.POST, request.FILES)
+    if request.method == 'POST':
+        form = forms.BookForm(request.POST)
         if form.is_valid():
-            form.save()
-            return HttpResponse('<h1>Коммент успешно добавлен</h1>')
-
-    else:
-        form = forms.ReviewForm()
-
-    return render(request, 'create_review.html', {'form': forms})
-
-def createLangPostView(request):
-    method = request.method
-    if method == "POST":
-        form = forms.BookForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return HttpResponse('Успешно добавлен')
+            # Обработка формы
+            pass
     else:
         form = forms.BookForm()
-    return render(request, 'book.html', {'form': form})
-
-def book_delete_view(request):
-    lang_value = models.Book.objects.all()
-    return render(request, 'del_book.html', {'lang_key': lang_value})
-
-def book_drop_view(request, id):
-    lang_id = get_object_or_404(models.Book, id=id)
-    lang_id.delete()
-    return HttpResponse('Успешно удален')
+    return render(request, 'create_review.html', {'form': form})
